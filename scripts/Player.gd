@@ -16,7 +16,8 @@ func _ready():
 	$Camera/Weapon.visible = !is_me
 
 	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
-	$Camera.rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
+	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
+	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
 
 func _physics_process(delta):
 	var direction_2D = Vector2() # Controls in 2D to normalize the directions
@@ -40,6 +41,10 @@ func _physics_process(delta):
 	if movement != Vector3.ZERO: # If we are moving/falling the new position is sent to other players
 		rset_unreliable("transform", transform)
 	
+	if Input.is_action_just_pressed("Flashlight"):
+		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
+		$Camera/FlashLight.rset_unreliable("visible", $Camera/FlashLight.visible)
+	
 	if Input.is_action_just_pressed("shoot"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -52,4 +57,4 @@ func _input(event):
 			$Camera.rotation_degrees.x -= event.relative.y * mouse_sensitivity / 10
 			$Camera.rotation_degrees.x = clamp($Camera.rotation_degrees.x, -90, 90)
 			# If we look around our camera rotation (and head and weapon) is sent to other player
-			$Camera.rset_unreliable("transform", $Camera.transform)
+			$Camera.rset_unreliable("rotation", $Camera.rotation)

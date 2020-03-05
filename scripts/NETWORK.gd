@@ -33,7 +33,7 @@ func load_game():
 
 	# Wait for the map to load, then search for the Spawner node
 	yield(get_tree().create_timer(0.01), "timeout")
-	spawner_node = get_tree().get_root().find_node("Spawner", true, false)
+	spawner_node = get_tree().get_root().find_node("Spawner1", true, false)
 
 	# If this is not the host, spawn the player locally
 	if not get_tree().is_network_server():

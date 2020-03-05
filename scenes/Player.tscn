@@ -36,6 +36,10 @@ transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.1
 mesh = SubResource( 3 )
 material/0 = null
 
+[node name="FlashLight" type="SpotLight" parent="Camera"]
+spot_range = 20.0
+spot_angle = 30.0
+
 [node name="Crosshair" type="TextureRect" parent="."]
 visible = false
 anchor_right = 1.0
