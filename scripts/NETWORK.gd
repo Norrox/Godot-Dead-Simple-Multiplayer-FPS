@@ -7,7 +7,6 @@ var player_scene = "res://scenes/Player.tscn"
 
 var spawner_node = null
 
-
 # Lobby buttons ================================================================
 
 func create_server(max_players):
@@ -54,12 +53,12 @@ func spawn_player(id):
 
 # Remote =======================================================================
 
-# If a client id emitted the signal of connecting spawn the player remotely:
+# If a client id emitted the signal of connecting, spawn the player remotely:
 func _on_network_peer_connected(id):
 	if id != 1:
 		spawn_player(id)
 
-# If a client id emitted the signal of deconnecting remove the player remotely:
+# If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
 	if spawner_node.has_node(str(id)):
 		spawner_node.get_node(str(id)).queue_free()
