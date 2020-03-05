@@ -1,0 +1,86 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://other/FiraSans-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://scripts/Lobby.gd" type="Script" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=2]
+default_font = SubResource( 1 )
+
+[node name="Lobby" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = SubResource( 2 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Menu" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -165.0
+margin_top = -100.0
+margin_right = 165.0
+margin_bottom = 100.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Players" type="HBoxContainer" parent="Menu"]
+margin_right = 330.0
+margin_bottom = 47.0
+
+[node name="Label" type="Label" parent="Menu/Players"]
+margin_top = 5.0
+margin_right = 171.0
+margin_bottom = 42.0
+text = "Max players:"
+
+[node name="MaxPlayers" type="LineEdit" parent="Menu/Players"]
+margin_left = 175.0
+margin_right = 281.0
+margin_bottom = 47.0
+text = "32"
+
+[node name="HostButton" type="Button" parent="Menu"]
+margin_top = 51.0
+margin_right = 330.0
+margin_bottom = 94.0
+text = "Host Game"
+
+[node name="HSeparator" type="HSeparator" parent="Menu"]
+margin_top = 98.0
+margin_right = 330.0
+margin_bottom = 102.0
+
+[node name="JoinIP" type="HBoxContainer" parent="Menu"]
+margin_top = 106.0
+margin_right = 330.0
+margin_bottom = 153.0
+
+[node name="Label" type="Label" parent="Menu/JoinIP"]
+margin_top = 5.0
+margin_right = 75.0
+margin_bottom = 42.0
+text = "To IP:"
+
+[node name="ToIP" type="LineEdit" parent="Menu/JoinIP"]
+margin_left = 79.0
+margin_right = 206.0
+margin_bottom = 47.0
+text = "127.0.0.1"
+expand_to_text_length = true
+
+[node name="JoinButton" type="Button" parent="Menu"]
+margin_top = 157.0
+margin_right = 330.0
+margin_bottom = 200.0
+text = "Join Game"
+[connection signal="pressed" from="Menu/HostButton" to="." method="_on_HostButton_pressed"]
+[connection signal="pressed" from="Menu/JoinButton" to="." method="_on_JoinButton_pressed"]
