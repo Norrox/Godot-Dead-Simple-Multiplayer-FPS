@@ -16,19 +16,24 @@ func _ready():
 	# Setup nodes:
 	$Camera.current = is_me
 	$Crosshair.visible = is_me
-	$Camera/Weapon.visible = !is_me
+	$Camera/HeadOrientation.visible = !is_me
 
 	# Data to send remotely:
 	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
+	$Camera/WeaponPosition.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 
 func send_data(): # Data sent each frame (not optimized, but easier to read and manage)
 	rset_unreliable("transform", transform)
 	$Camera.rset_unreliable("rotation", $Camera.rotation)
 	$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
+	$Camera/WeaponPosition.rset_unreliable("rotation", $Camera/WeaponPosition.rotation)
 
 func _physics_process(delta):
+	if $Camera/RayCast.get_collider() != null:
+		$Camera/WeaponPosition.look_at($Camera/RayCast.get_collision_point(), Vector3.UP)	
+	
 	var direction_2D = Vector2() # Controls in 2D to normalize the directions
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
 	direction_2D.x = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -70,6 +75,6 @@ func other_abilities():
 
 func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
-		var target = int( $Camera/RayCast.get_collider().name )
+		var target = $Camera/RayCast.get_collider().name
 		
 		DEBUG.display_info(target, "")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://scripts/Player.gd" type="Script" id=1]
 [ext_resource path="res://other/crosshair.png" type="Texture" id=2]
@@ -12,6 +12,11 @@ radius = 0.5
 height = 1.5
 
 [sub_resource type="CylinderMesh" id=3]
+top_radius = 0.1
+bottom_radius = 0.3
+height = 0.4
+
+[sub_resource type="CylinderMesh" id=4]
 top_radius = 0.1
 bottom_radius = 0.1
 height = 1.0
@@ -31,8 +36,8 @@ shape = SubResource( 2 )
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
 
-[node name="Weapon" type="MeshInstance" parent="Camera"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.19209e-07, -1 )
+[node name="HeadOrientation" type="MeshInstance" parent="Camera"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.19209e-07, -0.564848 )
 cast_shadow = 0
 mesh = SubResource( 3 )
 material/0 = null
@@ -45,6 +50,15 @@ spot_angle = 30.0
 [node name="RayCast" type="RayCast" parent="Camera"]
 enabled = true
 cast_to = Vector3( 0, 0, -100 )
+
+[node name="WeaponPosition" type="Spatial" parent="Camera"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0 )
+
+[node name="Weapon" type="MeshInstance" parent="Camera/WeaponPosition"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.5 )
+cast_shadow = 0
+mesh = SubResource( 4 )
+material/0 = null
 
 [node name="Crosshair" type="TextureRect" parent="."]
 anchor_right = 1.0
