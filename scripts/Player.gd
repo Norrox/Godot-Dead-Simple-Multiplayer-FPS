@@ -8,14 +8,13 @@ var mouse_sensitivity = 1
 var health = 100
 
 func _ready():
-	
-	get_tree().connect("server_disconnected", self, "_on_server_disconnected")
-	
-	
 	# If the name of this instanced node is the same as the client id we can control it
 	var is_me = name == str( get_tree().get_network_unique_id() )
 	set_physics_process(is_me) # Keyboard inputs allowed
 	set_process_input(is_me) # Mouse vision allowed
+
+	if is_me: # If our player has spawned capture the mouse
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 	# Setup nodes:
 	$Camera.current = is_me
@@ -23,12 +22,12 @@ func _ready():
 	$Camera/Weapon.visible = !is_me
 	$HUD.visible = is_me
 
-	# Synced properties:
+	# Data to send remotely:
 	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
 
-func synced_properties():
+func send_data(): # Data sent each frame (not optimized, but easier to read and manage)
 	rset_unreliable("transform", transform)
 	$Camera.rset_unreliable("rotation", $Camera.rotation)
 	$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
@@ -56,7 +55,7 @@ func _physics_process(delta):
 	movement = move_and_slide(movement, Vector3.UP)
 	
 	other_abilities()
-	synced_properties()
+	send_data()
 
 func _input(event):
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -76,14 +75,10 @@ func other_abilities():
 	if Input.is_action_just_pressed("Flashlight"):
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
 
-
 func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
 		$Camera/RayCast.get_collider().health -= 10
 		$HUD/Debug.text = "Enemy: " + str($Camera/RayCast.get_collider().health) + " HP"
-
-func _on_server_disconnected():
-	NETWORK.leave_game()
 
 func _on_DisconnectButton_pressed():
 	NETWORK.leave_game()

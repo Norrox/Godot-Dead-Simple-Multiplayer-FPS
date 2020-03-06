@@ -9,6 +9,9 @@ var lobby_scene = "res://scenes/Lobby.tscn"
 
 var spawn_node = null
 
+func _ready():
+	get_tree().connect("server_disconnected", self, "leave_game")
+
 # Lobby buttons ================================================================
 
 func create_server():
@@ -49,10 +52,11 @@ func spawn_player(id):
 	else:
 		print("Error: Spawner node missing in the map!")
 
-# Leave the game ===============================================================
+# Leave the game and return to Lobby ===========================================
 
 func leave_game():
 	get_tree().set_network_peer(null) # Sends a network_peer_disconnected signal
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().change_scene(lobby_scene)
 
 # Remote =======================================================================
