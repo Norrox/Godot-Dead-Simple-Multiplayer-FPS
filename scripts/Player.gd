@@ -33,6 +33,8 @@ func send_data(): # Data sent each frame (not optimized, but easier to read and 
 func _physics_process(delta):
 	if $Camera/RayCast.get_collider() != null:
 		$Camera/WeaponPosition.look_at($Camera/RayCast.get_collision_point(), Vector3.UP)	
+	else:
+		$Camera/WeaponPosition.rotation = Vector3()
 	
 	var direction_2D = Vector2() # Controls in 2D to normalize the directions
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
