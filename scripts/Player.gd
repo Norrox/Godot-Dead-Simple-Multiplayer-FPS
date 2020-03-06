@@ -17,7 +17,6 @@ func _ready():
 	$Camera.current = is_me
 	$Crosshair.visible = is_me
 	$Camera/Weapon.visible = !is_me
-	$HUD.visible = is_me
 
 	# Data to send remotely:
 	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
@@ -30,9 +29,6 @@ func send_data(): # Data sent each frame (not optimized, but easier to read and 
 	$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
 
 func _physics_process(delta):
-	
-	$HUD/Health.text = str(health) + " HP"
-	
 	var direction_2D = Vector2() # Controls in 2D to normalize the directions
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
 	direction_2D.x = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -73,11 +69,7 @@ func other_abilities():
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
 
 func shoot():
-#	and $Camera/RayCast.get_collider().get("health") != null:
-	if $Camera/RayCast.get_collider() != null:
-		DEBUG.display_info($Camera/RayCast.get_collider(), "")
-		$Camera/RayCast.get_collider().health -= 10
-		$HUD/Debug.text = "Enemy: " + str($Camera/RayCast.get_collider().health) + " HP"
-
-func _on_DisconnectButton_pressed():
-	NETWORK.leave_game()
+	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
+		var target = int( $Camera/RayCast.get_collider().name )
+		
+		DEBUG.display_info(target, "")
