@@ -65,21 +65,27 @@ __meta__ = {
 }
 
 [node name="HUD" type="VBoxContainer" parent="."]
-visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 theme = SubResource( 5 )
 
+[node name="DisconnectButton" type="Button" parent="HUD"]
+margin_right = 163.0
+margin_bottom = 43.0
+text = "Disconnect"
+
 [node name="Health" type="Label" parent="HUD"]
-margin_right = 92.0
-margin_bottom = 37.0
+margin_top = 47.0
+margin_right = 163.0
+margin_bottom = 84.0
 text = "100"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Debug" type="Label" parent="HUD"]
-margin_top = 41.0
-margin_right = 92.0
-margin_bottom = 78.0
+margin_top = 88.0
+margin_right = 163.0
+margin_bottom = 125.0
 text = "DEBUG"
+[connection signal="pressed" from="HUD/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]

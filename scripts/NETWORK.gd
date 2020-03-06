@@ -5,8 +5,9 @@ const MAX_PLAYERS = 32
 
 var map_scene = "res://scenes/Map.tscn"
 var player_scene = "res://scenes/Player.tscn"
+var lobby_scene = "res://scenes/Lobby.tscn"
 
-var spawner_node = null
+var spawn_node = null
 
 # Lobby buttons ================================================================
 
@@ -22,7 +23,6 @@ func join_server(to_IP):
 	get_tree().set_network_peer(peer)
 	load_game()
 
-
 # Enter the game ===============================================================
 
 func load_game():
@@ -30,7 +30,7 @@ func load_game():
 
 	# Wait for the map to load, then search for the Spawner node
 	yield(get_tree().create_timer(0.01), "timeout")
-	spawner_node = get_tree().get_root().find_node("Spawner1", true, false)
+	spawn_node = get_tree().get_root().find_node("Spawn", true, false)
 
 	# If this is not the host, spawn the player locally
 	if not get_tree().is_network_server():
@@ -44,10 +44,16 @@ func spawn_player(id):
 	var player_instance = load(player_scene).instance()
 	player_instance.name = str(id)
 	
-	if spawner_node != null:
-		spawner_node.add_child(player_instance)
+	if spawn_node != null:
+		spawn_node.add_child(player_instance)
 	else:
 		print("Error: Spawner node missing in the map!")
+
+# Leave the game ===============================================================
+
+func leave_game():
+	get_tree().set_network_peer(null) # Sends a network_peer_disconnected signal
+	get_tree().change_scene(lobby_scene)
 
 # Remote =======================================================================
 
@@ -58,5 +64,5 @@ func _on_network_peer_connected(id):
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
-	if spawner_node.has_node(str(id)):
-		spawner_node.get_node(str(id)).queue_free()
+	if spawn_node.has_node(str(id)):
+		spawn_node.get_node(str(id)).queue_free()

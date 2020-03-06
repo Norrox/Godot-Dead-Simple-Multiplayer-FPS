@@ -8,6 +8,10 @@ var mouse_sensitivity = 1
 var health = 100
 
 func _ready():
+	
+	get_tree().connect("server_disconnected", self, "_on_server_disconnected")
+	
+	
 	# If the name of this instanced node is the same as the client id we can control it
 	var is_me = name == str( get_tree().get_network_unique_id() )
 	set_physics_process(is_me) # Keyboard inputs allowed
@@ -20,10 +24,14 @@ func _ready():
 	$HUD.visible = is_me
 
 	# Synced properties:
-	rset_config("translation", MultiplayerAPI.RPC_MODE_REMOTE)
-	rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
+	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
+
+func synced_properties():
+	rset_unreliable("transform", transform)
+	$Camera.rset_unreliable("rotation", $Camera.rotation)
+	$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
 
 func _physics_process(delta):
 	
@@ -47,11 +55,8 @@ func _physics_process(delta):
 	
 	movement = move_and_slide(movement, Vector3.UP)
 	
-	if movement != Vector3(): # If we are moving of falling send our translation
-		rset_unreliable("translation", translation)
-	
 	other_abilities()
-
+	synced_properties()
 
 func _input(event):
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -59,10 +64,6 @@ func _input(event):
 			rotation_degrees.y -= event.relative.x * mouse_sensitivity / 10
 			$Camera.rotation_degrees.x -= event.relative.y * mouse_sensitivity / 10
 			$Camera.rotation_degrees.x = clamp($Camera.rotation_degrees.x, -90, 90)
-			
-			# If we look around send our rotation
-			rset_unreliable("rotation", rotation)
-			$Camera.rset_unreliable("rotation", $Camera.rotation)
 
 func other_abilities():
 	if Input.is_action_just_pressed("shoot"):
@@ -74,11 +75,15 @@ func other_abilities():
 	
 	if Input.is_action_just_pressed("Flashlight"):
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
-		
-		# Send reliably if our flashlight is On or Off
-		$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
+
 
 func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
 		$Camera/RayCast.get_collider().health -= 10
 		$HUD/Debug.text = "Enemy: " + str($Camera/RayCast.get_collider().health) + " HP"
+
+func _on_server_disconnected():
+	NETWORK.leave_game()
+
+func _on_DisconnectButton_pressed():
+	NETWORK.leave_game()
