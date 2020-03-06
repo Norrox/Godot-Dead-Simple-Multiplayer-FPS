@@ -45,6 +45,7 @@ mesh = SubResource( 3 )
 material/0 = null
 
 [node name="FlashLight" type="SpotLight" parent="Camera"]
+shadow_enabled = true
 spot_range = 20.0
 spot_angle = 30.0
 

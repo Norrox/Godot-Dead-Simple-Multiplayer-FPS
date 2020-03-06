@@ -28,7 +28,6 @@ func _physics_process(delta):
 	
 	$HUD/Health.text = str(health) + " HP"
 	
-	
 	var direction_2D = Vector2() # Controls in 2D to normalize the directions
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
 	direction_2D.x = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -47,26 +46,10 @@ func _physics_process(delta):
 	
 	movement = move_and_slide(movement, Vector3.UP)
 	
-	if movement != Vector3.ZERO: # If we are moving/falling the new position is sent to other players
-		rset_unreliable("transform", transform)
+	rset_unreliable("transform", transform)
 	
-	if Input.is_action_just_pressed("shoot"):
-		if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
-			$Camera/RayCast.get_collider().health -= 10
-			$HUD/Debug.text = "Ennemy: " + str($Camera/RayCast.get_collider().health) + " HP"
-	
-	
-	
-	
-	
-	if Input.is_action_just_pressed("Flashlight"):
-		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
-		$Camera/FlashLight.rset_unreliable("visible", $Camera/FlashLight.visible)
-	
-	if Input.is_action_just_pressed("shoot"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	if Input.is_action_just_pressed("ui_cancel"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	other_abilities()
+
 
 func _input(event):
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
@@ -77,3 +60,21 @@ func _input(event):
 			
 			# If we look around our camera rotation is sent to other player
 			$Camera.rset_unreliable("rotation", $Camera.rotation)
+
+func other_abilities():
+	if Input.is_action_just_pressed("shoot"):
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		shoot()
+	
+	if Input.is_action_just_pressed("ui_cancel"):
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	if Input.is_action_just_pressed("Flashlight"):
+		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
+		
+		$Camera/FlashLight.rset_unreliable("visible", $Camera/FlashLight.visible)
+
+func shoot():
+	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
+		$Camera/RayCast.get_collider().health -= 10
+		$HUD/Debug.text = "Enemy: " + str($Camera/RayCast.get_collider().health) + " HP"
