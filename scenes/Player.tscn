@@ -41,6 +41,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
 
 [node name="Weapon" type="MeshInstance" parent="Camera"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.19209e-07, -1 )
+cast_shadow = 0
 mesh = SubResource( 3 )
 material/0 = null
 
