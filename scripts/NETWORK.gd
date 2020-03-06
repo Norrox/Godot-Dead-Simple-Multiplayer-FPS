@@ -70,14 +70,17 @@ func leave_game():
 
 # Spawn the player remotely from connecting to another client
 func _on_network_peer_connected(id):
-	display_info("> " + str(id) + " has connected!", "")
+	
+	display_info("+ " + str(id) + " has connected!", "")
+	display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
 	if id != 1: # Do not spawn from the signal of the host which is equal to 1
 		spawn_player(id)
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
 	if spawn_node.has_node(str(id)): # To avoid crashing, it checks if it exists
-		display_info("> " + str(id) + " has left!", "")
+		display_info("- " + str(id) + " has left!", "")
+		display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
 		spawn_node.get_node(str(id)).queue_free()
 
 # Optionnal, displays various informations, indicate the message and color =====
