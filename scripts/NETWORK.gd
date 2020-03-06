@@ -50,7 +50,7 @@ func load_game():
 		# Other players and host will receive a signal to spawn you
 
 	else:
-		display_info("Error: Spawn node missing in the map, can't spawn Players!", "error")
+		DEBUG.display_info("Error: Spawn node missing in the map, can't spawn Players!", "error")
 
 # Spawn the player, get the local id or remote id from signal to spawn others ==
 
@@ -71,34 +71,14 @@ func leave_game():
 # Spawn the player remotely from connecting to another client
 func _on_network_peer_connected(id):
 	
-	display_info("+ " + str(id) + " has connected!", "")
-	display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
+	DEBUG.display_info("+ " + str(id) + " has connected!", "")
+	DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
 	if id != 1: # Do not spawn from the signal of the host which is equal to 1
 		spawn_player(id)
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
 	if spawn_node.has_node(str(id)): # To avoid crashing, it checks if it exists
-		display_info("- " + str(id) + " has left!", "")
-		display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
+		DEBUG.display_info("- " + str(id) + " has left!", "")
+		DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
 		spawn_node.get_node(str(id)).queue_free()
-
-# Optionnal, displays various informations, indicate the message and color =====
-
-func display_info(text, type):
-	if get_tree().get_root().find_node("DisplayVertically", true, false) == null:
-		var display_vertically = VBoxContainer.new()
-		add_child(display_vertically)
-		display_vertically.name = "DisplayVertically"
-
-	var debug_node = Label.new()
-	get_node("DisplayVertically").add_child(debug_node)
-	debug_node.text = text
-	
-	if type == "error":
-		debug_node.set("custom_colors/font_color", Color.red)
-	else:
-		debug_node.set("custom_colors/font_color", Color(0, 0.5, 0))
-	
-	yield(get_tree().create_timer(5), "timeout")
-	debug_node.queue_free()

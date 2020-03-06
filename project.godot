@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [autoload]
 
 NETWORK="*res://scripts/NETWORK.gd"
+DEBUG="*res://scripts/DEBUG.gd"
 
 [input]
 
@@ -64,5 +65,4 @@ Flashlight={
 
 [rendering]
 
-quality/filters/msaa=4
 environment/default_environment="res://default_env.tres"
