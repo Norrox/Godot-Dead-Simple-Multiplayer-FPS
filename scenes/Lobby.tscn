@@ -32,37 +32,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Players" type="HBoxContainer" parent="Menu"]
-margin_right = 330.0
-margin_bottom = 47.0
-
-[node name="Label" type="Label" parent="Menu/Players"]
-margin_top = 5.0
-margin_right = 171.0
-margin_bottom = 42.0
-text = "Max players:"
-
-[node name="MaxPlayers" type="LineEdit" parent="Menu/Players"]
-margin_left = 175.0
-margin_right = 281.0
-margin_bottom = 47.0
-text = "32"
-
 [node name="HostButton" type="Button" parent="Menu"]
-margin_top = 51.0
 margin_right = 330.0
-margin_bottom = 94.0
+margin_bottom = 43.0
 text = "Host Game"
 
 [node name="HSeparator" type="HSeparator" parent="Menu"]
-margin_top = 98.0
+margin_top = 47.0
 margin_right = 330.0
-margin_bottom = 102.0
+margin_bottom = 51.0
 
 [node name="JoinIP" type="HBoxContainer" parent="Menu"]
-margin_top = 106.0
+margin_top = 55.0
 margin_right = 330.0
-margin_bottom = 153.0
+margin_bottom = 102.0
 
 [node name="Label" type="Label" parent="Menu/JoinIP"]
 margin_top = 5.0
@@ -78,9 +61,9 @@ text = "127.0.0.1"
 expand_to_text_length = true
 
 [node name="JoinButton" type="Button" parent="Menu"]
-margin_top = 157.0
+margin_top = 106.0
 margin_right = 330.0
-margin_bottom = 200.0
+margin_bottom = 149.0
 text = "Join Game"
 [connection signal="pressed" from="Menu/HostButton" to="." method="_on_HostButton_pressed"]
 [connection signal="pressed" from="Menu/JoinButton" to="." method="_on_JoinButton_pressed"]

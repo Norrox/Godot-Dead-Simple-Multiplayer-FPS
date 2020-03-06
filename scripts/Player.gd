@@ -20,7 +20,8 @@ func _ready():
 	$HUD.visible = is_me
 
 	# Synced properties:
-	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
+	rset_config("translation", MultiplayerAPI.RPC_MODE_REMOTE)
+	rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
 
@@ -46,7 +47,8 @@ func _physics_process(delta):
 	
 	movement = move_and_slide(movement, Vector3.UP)
 	
-	rset_unreliable("transform", transform)
+	if movement != Vector3(): # If we are moving of falling send our translation
+		rset_unreliable("translation", translation)
 	
 	other_abilities()
 
@@ -58,7 +60,8 @@ func _input(event):
 			$Camera.rotation_degrees.x -= event.relative.y * mouse_sensitivity / 10
 			$Camera.rotation_degrees.x = clamp($Camera.rotation_degrees.x, -90, 90)
 			
-			# If we look around our camera rotation is sent to other player
+			# If we look around send our rotation
+			rset_unreliable("rotation", rotation)
 			$Camera.rset_unreliable("rotation", $Camera.rotation)
 
 func other_abilities():
@@ -72,7 +75,8 @@ func other_abilities():
 	if Input.is_action_just_pressed("Flashlight"):
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
 		
-		$Camera/FlashLight.rset_unreliable("visible", $Camera/FlashLight.visible)
+		# Send reliably if our flashlight is On or Off
+		$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
 
 func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:

@@ -1,6 +1,7 @@
 extends Node
 
 const SERVER_PORT = 4242
+const MAX_PLAYERS = 32
 
 var map_scene = "res://scenes/Map.tscn"
 var player_scene = "res://scenes/Player.tscn"
@@ -9,12 +10,9 @@ var spawner_node = null
 
 # Lobby buttons ================================================================
 
-func create_server(max_players):
-	if max_players < 1:
-		max_players = 1
-	
+func create_server():
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_server(SERVER_PORT, max_players)
+	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().set_network_peer(peer)
 	load_game()
 	
