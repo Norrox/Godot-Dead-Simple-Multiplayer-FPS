@@ -73,7 +73,9 @@ func other_abilities():
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
 
 func shoot():
-	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
+#	and $Camera/RayCast.get_collider().get("health") != null:
+	if $Camera/RayCast.get_collider() != null:
+		DEBUG.display_info($Camera/RayCast.get_collider(), "")
 		$Camera/RayCast.get_collider().health -= 10
 		$HUD/Debug.text = "Enemy: " + str($Camera/RayCast.get_collider().health) + " HP"
 

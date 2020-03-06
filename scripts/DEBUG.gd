@@ -10,7 +10,7 @@ func display_info(text, type):
 
 	var debug_node = Label.new()
 	get_node("DisplayVertically").add_child(debug_node)
-	debug_node.text = text
+	debug_node.text = str(text)
 	
 	if type == "error":
 		debug_node.set("custom_colors/font_color", Color.red)
