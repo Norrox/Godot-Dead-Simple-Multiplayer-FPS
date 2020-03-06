@@ -10,6 +10,9 @@ var lobby_scene = "res://scenes/Lobby.tscn"
 var spawn_node = null
 
 func _ready():
+	# Signals are only received from others
+	get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
+	get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
 	get_tree().connect("server_disconnected", self, "leave_game")
 
 # Lobby buttons ================================================================
@@ -42,10 +45,9 @@ func load_game():
 			spawn_player( get_tree().get_network_unique_id() )
 	
 		# Other players and host will receive a signal to spawn you
-		get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
-		get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
+
 	else:
-		error("Error: Spawn node missing in the map, can't spawn Players!")
+		display_info("Error: Spawn node missing in the map, can't spawn Players!")
 
 func spawn_player(id):
 	var player_instance = load(player_scene).instance()
@@ -63,7 +65,8 @@ func leave_game():
 
 # If a client id emitted the signal of connecting, spawn the player remotely:
 func _on_network_peer_connected(id):
-	if id != 1:
+	display_info("Connected with " + str(id))
+	if id != 1: # Do not spawn from the signal of the host
 		spawn_player(id)
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
@@ -71,10 +74,10 @@ func _on_network_peer_disconnected(id):
 	if spawn_node.has_node(str(id)):
 		spawn_node.get_node(str(id)).queue_free()
 
-func error(text):
+func display_info(text):
 	var debug_node = Label.new()
 	add_child(debug_node)
 	debug_node.text = text
-	debug_node.set("custom_colors/font_color", Color(1,0,0))
+	debug_node.set("custom_colors/font_color", Color(0,0.5,0))
 	yield(get_tree().create_timer(3), "timeout")
 	debug_node.queue_free()

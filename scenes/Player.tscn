@@ -69,22 +69,23 @@ margin_bottom = 40.0
 theme = SubResource( 5 )
 
 [node name="DisconnectButton" type="Button" parent="HUD"]
+visible = false
 margin_right = 163.0
 margin_bottom = 43.0
 text = "Disconnect"
 
 [node name="Health" type="Label" parent="HUD"]
-margin_top = 47.0
+visible = false
 margin_right = 163.0
-margin_bottom = 84.0
+margin_bottom = 37.0
 text = "100"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Debug" type="Label" parent="HUD"]
-margin_top = 88.0
+visible = false
 margin_right = 163.0
-margin_bottom = 125.0
+margin_bottom = 37.0
 text = "DEBUG"
 [connection signal="pressed" from="HUD/DisconnectButton" to="." method="_on_DisconnectButton_pressed"]

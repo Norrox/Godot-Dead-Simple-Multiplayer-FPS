@@ -13,9 +13,6 @@ func _ready():
 	set_physics_process(is_me) # Keyboard inputs allowed
 	set_process_input(is_me) # Mouse vision allowed
 
-	if is_me: # If our player has spawned capture the mouse
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
 	# Setup nodes:
 	$Camera.current = is_me
 	$Crosshair.visible = is_me
