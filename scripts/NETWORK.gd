@@ -35,22 +35,22 @@ func load_game():
 	yield(get_tree().create_timer(0.01), "timeout")
 	spawn_node = get_tree().get_root().find_node("Spawn", true, false)
 
-	# If this is not the host, spawn the player locally
-	if not get_tree().is_network_server():
-		spawn_player( get_tree().get_network_unique_id() )
-
-	# Other players and host will receive a signal to spawn you
-	get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
-	get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
+	if spawn_node != null: # If we have added a spawn node in the map
+		
+		# If this is not the host, spawn the player locally
+		if not get_tree().is_network_server():
+			spawn_player( get_tree().get_network_unique_id() )
+	
+		# Other players and host will receive a signal to spawn you
+		get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
+		get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
+	else:
+		error("Error: Spawn node missing in the map, can't spawn Players!")
 
 func spawn_player(id):
 	var player_instance = load(player_scene).instance()
 	player_instance.name = str(id)
-	
-	if spawn_node != null:
-		spawn_node.add_child(player_instance)
-	else:
-		print("Error: Spawner node missing in the map!")
+	spawn_node.add_child(player_instance)
 
 # Leave the game and return to Lobby ===========================================
 
@@ -70,3 +70,11 @@ func _on_network_peer_connected(id):
 func _on_network_peer_disconnected(id):
 	if spawn_node.has_node(str(id)):
 		spawn_node.get_node(str(id)).queue_free()
+
+func error(text):
+	var debug_node = Label.new()
+	add_child(debug_node)
+	debug_node.text = text
+	debug_node.set("custom_colors/font_color", Color(1,0,0))
+	yield(get_tree().create_timer(3), "timeout")
+	debug_node.queue_free()
