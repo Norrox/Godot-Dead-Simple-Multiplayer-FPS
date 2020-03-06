@@ -10,7 +10,7 @@ var lobby_scene = "res://scenes/Lobby.tscn"
 var spawn_node = null
 
 func _ready():
-	# Signals are only received from others
+	# Signals are emitted by others already connected or joining the game
 	get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
 	get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
 	get_tree().connect("server_disconnected", self, "leave_game")
@@ -47,7 +47,7 @@ func load_game():
 		# Other players and host will receive a signal to spawn you
 
 	else:
-		display_info("Error: Spawn node missing in the map, can't spawn Players!")
+		display_info("Error: Spawn node missing in the map, can't spawn Players!", "error")
 
 func spawn_player(id):
 	var player_instance = load(player_scene).instance()
@@ -65,19 +65,32 @@ func leave_game():
 
 # If a client id emitted the signal of connecting, spawn the player remotely:
 func _on_network_peer_connected(id):
-	display_info("Connected with " + str(id))
+	display_info("> " + str(id) + " has connected!", "")
 	if id != 1: # Do not spawn from the signal of the host
 		spawn_player(id)
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
 	if spawn_node.has_node(str(id)):
+		display_info("> " + str(id) + " has left!", "")
 		spawn_node.get_node(str(id)).queue_free()
 
-func display_info(text):
+# Optionnal, displays various informations, indicate the message and color ======
+
+func display_info(text, color):
+	if get_tree().get_root().find_node("DisplayVertically", true, false) == null:
+		var display_vertically = VBoxContainer.new()
+		add_child(display_vertically)
+		display_vertically.name = "DisplayVertically"
+
 	var debug_node = Label.new()
-	add_child(debug_node)
+	get_node("DisplayVertically").add_child(debug_node)
 	debug_node.text = text
-	debug_node.set("custom_colors/font_color", Color(0,0.5,0))
-	yield(get_tree().create_timer(3), "timeout")
+	
+	if color == "error":
+		debug_node.set("custom_colors/font_color", Color.red)
+	else:
+		debug_node.set("custom_colors/font_color", Color(0, 0.5, 0))
+	
+	yield(get_tree().create_timer(5), "timeout")
 	debug_node.queue_free()
