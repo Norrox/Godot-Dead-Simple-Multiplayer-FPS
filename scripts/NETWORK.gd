@@ -25,9 +25,9 @@ func create_server():
 	
 	load_game()
 	
-func join_server(to_IP):
+func join_server(SERVER_IP):
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client(to_IP, SERVER_PORT)
+	peer.create_client(SERVER_IP, SERVER_PORT)
 	get_tree().set_network_peer(peer)
 	
 	load_game()
@@ -43,7 +43,7 @@ func load_game():
 
 	if spawn_node != null: # If we have a spawn node in the map
 		
-		# If this is not the host, spawn the player locally
+		# If this is not the host, spawn the player locally, remove this condition and the signal condition if the host plays too
 		if not get_tree().is_network_server():
 			spawn_player( get_tree().get_network_unique_id() )
 	
@@ -70,15 +70,15 @@ func leave_game():
 
 # Spawn the player remotely from connecting to another client
 func _on_network_peer_connected(id):
+	if id != 1: # Do not spawn from the signal of the host connected (id = 1) because he has no player to control
+		spawn_player(id)
 	
 	DEBUG.display_info("+ " + str(id) + " has connected!", "")
-	DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
-	if id != 1: # Do not spawn from the signal of the host which is equal to 1
-		spawn_player(id)
+	DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), "")
 
 # If a client id emitted the signal of disconnecting, remove the player remotely:
 func _on_network_peer_disconnected(id):
-	if spawn_node.has_node(str(id)): # To avoid crashing, it checks if it exists
-		DEBUG.display_info("- " + str(id) + " has left!", "")
-		DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), ""  )
-		spawn_node.get_node(str(id)).queue_free()
+	spawn_node.get_node(str(id)).queue_free()
+	
+	DEBUG.display_info("- " + str(id) + " has left!", "")
+	DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), "")

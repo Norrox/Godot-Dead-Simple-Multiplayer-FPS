@@ -13,7 +13,10 @@ func _ready():
 	set_physics_process(is_me) # Keyboard inputs allowed
 	set_process_input(is_me) # Mouse vision allowed
 
-	# Setup nodes:
+	# Setup nodes:	
+	if is_me:
+		$Camera/RayCast.enabled = is_me
+	
 	$Camera.current = is_me
 	$Crosshair.visible = is_me
 	$Camera/HeadOrientation.visible = !is_me
@@ -36,12 +39,13 @@ func _physics_process(delta):
 	else:
 		$Camera/WeaponPosition.rotation = Vector3()
 	
-	var direction_2D = Vector2() # Controls in 2D to normalize the directions
+	# Controls from user inputs, set in 2D to normalize the direction
+	var direction_2D = Vector2()
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
 	direction_2D.x = Input.get_action_strength("right") - Input.get_action_strength("left")
 	direction_2D = direction_2D.normalized()
 	
-	# 2D direction normalized added to 3D vector
+	# 2D direction normalized added to Vector3 to apply gravity and jump
 	movement.z = direction_2D.y * speed
 	movement.x = direction_2D.x * speed
 	movement.y -= 9.8 * delta
@@ -79,4 +83,4 @@ func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
 		var target = $Camera/RayCast.get_collider().name
 		
-		DEBUG.display_info(target, "")
+		DEBUG.display_info("Raycast has hit player " + target, "")
