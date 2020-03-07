@@ -35,7 +35,10 @@ func send_data(): # Data sent each frame (not optimized, but easier to read and 
 	$Camera/WeaponPosition.rset_unreliable("rotation", $Camera/WeaponPosition.rotation)
 
 func _physics_process(delta):
-
+	if $Camera/RayCast.get_collider() != null:
+		$Camera/WeaponPosition.look_at($Camera/RayCast.get_collision_point(), Vector3.UP)	
+	else:
+		$Camera/WeaponPosition.rotation = Vector3()
 	
 	# Controls from user inputs, set in 2D to normalize the direction
 	var direction_2D = Vector2()
@@ -76,12 +79,6 @@ func other_abilities():
 	
 	if Input.is_action_just_pressed("Flashlight"):
 		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
-	
-	# The Weapon aim at the raycast point (visual effect)
-	if $Camera/RayCast.get_collider() != null:
-		$Camera/WeaponPosition.look_at($Camera/RayCast.get_collision_point(), Vector3.UP)
-	else:
-		$Camera/WeaponPosition.rotation = Vector3()
 
 func shoot():
 	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
@@ -90,8 +87,9 @@ func shoot():
 		DEBUG.display_info("I have: " + str(health), "")
 		DEBUG.display_info("Target has: " + str(target.health), "")
 
-remotesync func damage(amount):
+sync func damage(amount):
 	health -= amount
+	
 	DEBUG.display_info(health, "")
 	
 	if health <= 0.0:
