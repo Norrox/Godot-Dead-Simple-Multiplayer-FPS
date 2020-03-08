@@ -7,7 +7,7 @@ var map_scene = "res://scenes/Map.tscn"
 var player_scene = "res://scenes/Player.tscn"
 var lobby_scene = "res://scenes/Lobby.tscn"
 
-var spawn_node = null
+var spawn_node = null # It will search for the spawn node after loading the game to add the player
 
 # Signals emitted by others connecting or already connected ====================
 # Those signals allow to spawn and despawn you on other players' game
