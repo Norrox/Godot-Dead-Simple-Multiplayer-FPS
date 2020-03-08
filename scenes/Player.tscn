@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/Player.gd" type="Script" id=1]
 [ext_resource path="res://other/crosshair.png" type="Texture" id=2]
@@ -15,11 +15,6 @@ height = 1.5
 top_radius = 0.1
 bottom_radius = 0.3
 height = 0.4
-
-[sub_resource type="CylinderMesh" id=4]
-top_radius = 0.1
-bottom_radius = 0.1
-height = 1.0
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 1 )
@@ -42,22 +37,8 @@ cast_shadow = 0
 mesh = SubResource( 3 )
 material/0 = null
 
-[node name="FlashLight" type="SpotLight" parent="Camera"]
-shadow_enabled = true
-spot_range = 20.0
-spot_angle = 30.0
-
 [node name="RayCast" type="RayCast" parent="Camera"]
 cast_to = Vector3( 0, 0, -100 )
-
-[node name="WeaponPosition" type="Spatial" parent="Camera"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, -0.5, 0 )
-
-[node name="Weapon" type="MeshInstance" parent="Camera/WeaponPosition"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.5 )
-cast_shadow = 0
-mesh = SubResource( 4 )
-material/0 = null
 
 [node name="Crosshair" type="TextureRect" parent="."]
 anchor_right = 1.0

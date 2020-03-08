@@ -7,36 +7,33 @@ var mouse_sensitivity = 1
 
 var health = 100
 
+# Initialize the node, check if we can control it by comparing his name and my id
+
 func _ready():
 	# If the name of this instanced node is the same as the client id we can control it
 	var is_me = name == str( get_tree().get_network_unique_id() )
-	set_physics_process(is_me) # Keyboard inputs allowed
+	set_physics_process(is_me) # Keyboard inputs settings allowed
 	set_process_input(is_me) # Mouse vision allowed
 
 	# Setup nodes:
-	if is_me:
-		$Camera/RayCast.enabled = is_me
-		$Camera/RayCast.add_exception(self)
-	
+	$Camera/RayCast.enabled = is_me
 	$Camera.current = is_me
 	$Crosshair.visible = is_me
 	$Camera/HeadOrientation.visible = !is_me
 
-	# Data to send remotely:
+	# Data activated to send remotely:
 	rset_config("transform", MultiplayerAPI.RPC_MODE_REMOTE)
 	$Camera.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
-	$Camera/FlashLight.rset_config("visible", MultiplayerAPI.RPC_MODE_REMOTE)
-	$Camera/WeaponPosition.rset_config("rotation", MultiplayerAPI.RPC_MODE_REMOTE)
 
-func send_data(): # Data sent each frame (not optimized, but easier to read and manage)
+# Data sent from this node if the physics_process and process_input are active =
+
+func send_data(): # Data sent each frame to other games to sync the game
 	rset_unreliable("transform", transform)
 	$Camera.rset_unreliable("rotation", $Camera.rotation)
-	$Camera/FlashLight.rset("visible", $Camera/FlashLight.visible)
-	$Camera/WeaponPosition.rset_unreliable("rotation", $Camera/WeaponPosition.rotation)
+
+# Keyboard inputs, gravity and movement ========================================
 
 func _physics_process(delta):
-
-	
 	# Controls from user inputs, set in 2D to normalize the direction
 	var direction_2D = Vector2()
 	direction_2D.y = Input.get_action_strength("backward") - Input.get_action_strength("forward")
@@ -59,6 +56,8 @@ func _physics_process(delta):
 	other_abilities()
 	send_data()
 
+# Mouse movements to look arround ==============================================
+
 func _input(event):
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		if event is InputEventMouseMotion:
@@ -66,33 +65,12 @@ func _input(event):
 			$Camera.rotation_degrees.x -= event.relative.y * mouse_sensitivity / 10
 			$Camera.rotation_degrees.x = clamp($Camera.rotation_degrees.x, -90, 90)
 
+# Show the mouse with escape, capture it with right click ======================
+
 func other_abilities():
 	if Input.is_action_just_pressed("shoot"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		shoot()
 	
 	if Input.is_action_just_pressed("ui_cancel"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	
-	if Input.is_action_just_pressed("Flashlight"):
-		$Camera/FlashLight.visible = !$Camera/FlashLight.visible
-	
-	# The Weapon aim at the raycast point (visual effect)
-	if $Camera/RayCast.get_collider() != null:
-		$Camera/WeaponPosition.look_at($Camera/RayCast.get_collision_point(), Vector3.UP)
-	else:
-		$Camera/WeaponPosition.rotation = Vector3()
-
-func shoot():
-	if $Camera/RayCast.get_collider() != null and $Camera/RayCast.get_collider().get("health") != null:
-		var target = $Camera/RayCast.get_collider()
-		rpc_unreliable_id(int(target.name), "damage", 10.0)
-		DEBUG.display_info("I have: " + str(health), "")
-		DEBUG.display_info("Target has: " + str(target.health), "")
-
-remotesync func damage(amount):
-	health -= amount
-	DEBUG.display_info(health, "")
-	
-	if health <= 0.0:
-		get_tree().quit()

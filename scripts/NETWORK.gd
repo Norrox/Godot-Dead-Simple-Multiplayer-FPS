@@ -10,13 +10,13 @@ var lobby_scene = "res://scenes/Lobby.tscn"
 var spawn_node = null
 
 # Signals emitted by others connecting or already connected ====================
-
+# Those signals allow to spawn and despawn you on other players' game
 func _ready():
 	get_tree().connect("network_peer_connected", self, "_on_network_peer_connected")
 	get_tree().connect("network_peer_disconnected", self, "_on_network_peer_disconnected")
 	get_tree().connect("server_disconnected", self, "leave_game")
 
-# Lobby buttons ================================================================
+# Lobby buttons, connected from Lobby.gd =======================================
 
 func create_server():
 	var peer = NetworkedMultiplayerENet.new()
@@ -52,7 +52,7 @@ func load_game():
 	else:
 		DEBUG.display_info("Error: Spawn node missing in the map, can't spawn Players!", "error")
 
-# Spawn the player, get the local id or remote id from signal to spawn others ==
+# Spawn the player locally after loading the game and remotely from a signal ===
 
 func spawn_player(id):
 	var player_instance = load(player_scene).instance()
@@ -76,7 +76,7 @@ func _on_network_peer_connected(id):
 	DEBUG.display_info("+ " + str(id) + " has connected!", "")
 	DEBUG.display_info("= Total connected: " + str( get_tree().get_network_connected_peers().size() ), "")
 
-# If a client id emitted the signal of disconnecting, remove the player remotely:
+# If a client id emitted the signal of disconnecting, remove the player remotely
 func _on_network_peer_disconnected(id):
 	spawn_node.get_node(str(id)).queue_free()
 	
